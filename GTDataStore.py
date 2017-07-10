@@ -1,4 +1,4 @@
-from Activity imort Activity
+from Activity import Activity
 
 import sqlite3
 
