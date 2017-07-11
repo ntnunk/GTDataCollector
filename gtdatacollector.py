@@ -15,9 +15,6 @@ class GTDataCollector(object):
         self.contact_list = []
         self.read_config()
 
-        print self.strava_config
-        print self.contact_list
-
     def read_config(self):
         """
         Read the configuration from the config.xml file.
@@ -86,12 +83,6 @@ class GTDataCollector(object):
             act_list.append(act)
         db_store = GTDataStore(self.db_path)
         db_store.store_if_new(act_list)
-
-    def store_ride_data(self, ride_data):
-        """
-        Store the collected ride data in the database table
-        """
-        pass
 
     def generate_export_file(self, export_path):
         """
