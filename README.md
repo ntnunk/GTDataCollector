@@ -17,10 +17,10 @@ Configuration is achieved via a configuration XML file. The format of the file i
     <strava>
         <client id="your-client-id"
             secret="your-client-secret"
-            access-token="your-access-token"
+            access-token="your-access-token">
         </client>
         <group id="strava-group-id"
-            name="strava-group-name"
+            name="strava-group-name">
         </group>
     </strava>
     <database>
