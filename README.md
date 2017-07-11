@@ -9,11 +9,12 @@ Strava, collates and arranges the data into desired import formats for other too
 challenges.
 
 ### Configuration
-Configuration is achieved via a configuration XML file. The format of the file is as follows:
+Configuration is controlled via an XML file. The format of the file is as follows:
 
 ```xml
 <gtdata>
     <strava>
+        <!-- Client ID and Client Secret Probably aren't needed -->
         <client id="your-client-id"
             secret="your-client-secret"
             access-token="your-access-token">
@@ -27,6 +28,7 @@ Configuration is achieved via a configuration XML file. The format of the file i
         <file name="database_file.db"></file>
     </database>
     <contact-list>
+        <!-- As many users as desired can be configured -->
         <user firstname="First"
             lastname="Last"
             email="email@address.com">
