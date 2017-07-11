@@ -1,6 +1,6 @@
 class Activity(object):
-    def __init__(strava_id, athlete=None, name=None, distance=None, elevation=None, gmt_date=None, elapsed_time=None):
-        self.strava_id = id
+    def __init__(self, strava_id, athlete=None, name=None, distance=None, elevation=None, gmt_date=None, elapsed_time=None):
+        self.strava_id = strava_id
         self.athlete = athlete
         self.name = name
         self.distance = distance
@@ -42,11 +42,11 @@ class Activity(object):
         self.gmt_date = gmt_date
 
     def get_gmt_date(self):
-        return self.gmt_date
+        return self.gmt_date.strftime("%Y-%m-%d %H:%M:%S.%f")
 
     def set_elapsed_time(self, elapsed_time):
         self.elapsed_time = elapsed_time
 
     def get_elapsed_time(self):
-        return self.elapsed_time
+        return str(self.elapsed_time)
 

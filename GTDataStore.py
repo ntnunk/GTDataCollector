@@ -1,11 +1,14 @@
 from Activity import Activity
 
+import os
 import sqlite3
 
 class GTDataStore(object):
-    def __init__(self):
+    def __init__(self, db_path):
         self.connection = None
-        self.db = None
+        self.db = db_path
+        if not os.path.exists(db_path):
+            self.create_db(db_path)
 
     def set_db(self, db_path):
         self.db = db_path
@@ -13,18 +16,18 @@ class GTDataStore(object):
     def get_db(self):
         return self.db
 
-    def create_db(db_name):
+    def create_db(self, db_name):
         conn = sqlite3.connect(db_name)
         c = conn.cursor()
 
         # Create the users table
-        sql = """CREATE TABLE users (id integer, name text, race_num integer)"""
+        sql = """CREATE TABLE users (id integer primary key, name text, race_num integer)"""
         c.execute(sql)
 
         # Create the ride data table
         sql = """
             CREATE TABLE rides 
-                (activity integer, rider integer, name text, date text, ride_time text, distance
+                (activity real primary key, rider integer, name text, date text, ride_time text, distance
                 integer, elevation integer)
             """
         c.execute(sql)
@@ -38,10 +41,10 @@ class GTDataStore(object):
         return self.connection.cursor()
 
     def commit_and_close(self):
-        self.conection.commit()
+        self.connection.commit()
         self.connection.close()
 
-    def store_if_new(act_list):
+    def store_if_new(self, act_list):
         """
         check if the activity is already in the DB, store if not.
         Select by Activity ID, if no record returned then store
@@ -49,8 +52,9 @@ class GTDataStore(object):
         self.create_connection()
         c = self.get_db_cursor()
         for act in act_list:
-            ride_id = (act.get_strava_id(),)
-            sql = 'SELECT * FROM rides WHERE activity=?'
+            strava_id = str(act.get_strava_id())
+            ride_id = (strava_id,)
+            sql = "SELECT date FROM rides WHERE activity=?"
             c.execute(sql, ride_id)
             if c.fetchone() is None:
                 ride_data = (act.get_strava_id(), act.get_athlete(), act.get_name(),

@@ -40,6 +40,20 @@ class GTDataCollector(object):
                 self.strava_config['group-name'] = el.attrib['name']
                 self.strava_config['group-id'] = el.attrib['id']
 
+        db_element = config_tree.find('database')
+        db_name = None
+        db_path = None
+        for el in db_element:
+            if el.tag == 'path':
+                db_path = el.attrib['name']
+            elif el.tag == 'file':
+                db_name = el.attrib['name']
+
+        if db_name is not None and db_path is not None:
+            self.db_path = os.path.join(db_path, db_name)
+        else:
+            self.db_path = os.path.join('.', 'gtdc.db')
+
         contact_list_element = config_tree.find('contact-list')
         for el in contact_list_element:
             user = {}
@@ -70,7 +84,7 @@ class GTDataCollector(object):
             act.set_distance(round(unithelper.kilometers(activity.distance).num, 2))
             act.set_elevation(unithelper.meters(activity.total_elevation_gain).num)
             act_list.append(act)
-        db_store = GTDataStore()
+        db_store = GTDataStore(self.db_path)
         db_store.store_if_new(act_list)
 
     def store_ride_data(self, ride_data):
