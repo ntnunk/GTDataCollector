@@ -1,5 +1,4 @@
 ## MyFitnessPal Grand Tour Challenge Data Collection Tool
----
 
 ### Project Summary
 A simple tool to assist with data collection for the Grant Tour Challenges hosted on the
