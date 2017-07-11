@@ -21,7 +21,7 @@ Configuration is achieved via a configuration XML file. The format of the file i
         </client>
         <group id="strava-group-id"
             name="strava-group-name"
-        </group
+        </group>
     </strava>
     <database>
         <path name="/database/path"></path>
