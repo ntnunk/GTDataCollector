@@ -10,7 +10,9 @@ import os
 import string
 
 class GTDataCollector(object):
-    def __init__(self):
+    def __init__(self, verbose=False):
+        self.verbose = verbose
+
         self.strava_config = {}
         self.contact_list = []
         self.read_config()
@@ -30,11 +32,21 @@ class GTDataCollector(object):
         strava_element = config_tree.find('strava')
         for el in strava_element:
             if el.tag == 'client':
-                self.strava_config['id'] = el.attrib['id']
-                self.strava_config['secret'] = el.attrib['secret']
+                if 'id' in el.attrib:
+                    self.strava_config['id'] = el.attrib['id']
+                else:
+                    self.strava_config['id'] = None
+
+                if 'secret' in el.attrib:
+                    self.strava_config['secret'] = el.attrib['secret']
+                else:
+                    self.strava_config['secret'] = None
                 self.strava_config['access-token'] = el.attrib['access-token']
             elif el.tag == 'group':
-                self.strava_config['group-name'] = el.attrib['name']
+                if 'name' in el.attrib:
+                    self.strava_config['group-name'] = el.attrib['name']
+                else:
+                    self.strava_config['group-name'] = None
                 self.strava_config['group-id'] = el.attrib['id']
 
         db_element = config_tree.find('database')
@@ -70,8 +82,8 @@ class GTDataCollector(object):
 
         act_list = []
         for activity in activities:
-            if not activity.type == "Ride" or activity.trainer == True:
-                # This is either not a bicycle ride or it's an indoor ride of some type. Disregard.
+            if not activity.type == 'Ride' and not activity.type == 'VirtualRide':
+                print 'Non-ride activity: %s, type: %s' % (activity.name, activity.type)
                 continue
             act = Activity(activity.id)
             act.set_athlete(activity.athlete.id)
@@ -80,8 +92,10 @@ class GTDataCollector(object):
             act.set_elapsed_time(activity.elapsed_time)
             act.set_distance(round(unithelper.kilometers(activity.distance).num, 2))
             act.set_elevation(unithelper.meters(activity.total_elevation_gain).num)
+            act.set_ride_type(activity.type)
+            act.set_trainer_ride(activity.trainer)
             act_list.append(act)
-        db_store = GTDataStore(self.db_path)
+        db_store = GTDataStore(self.db_path, self.verbose)
         db_store.store_if_new(act_list)
 
     def generate_export_file(self, export_path):
@@ -97,5 +111,5 @@ class GTDataCollector(object):
         pass
 
 if __name__ == '__main__':
-    gtdc = GTDataCollector()
+    gtdc = GTDataCollector(verbose=True)
     gtdc.collect_ride_data()

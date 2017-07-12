@@ -4,7 +4,8 @@ import os
 import sqlite3
 
 class GTDataStore(object):
-    def __init__(self, db_path):
+    def __init__(self, db_path, verbose=False):
+        self.verbose = verbose
         self.connection = None
         self.db = db_path
         if not os.path.exists(db_path):
@@ -28,7 +29,7 @@ class GTDataStore(object):
         sql = """
             CREATE TABLE rides 
                 (activity real primary key, rider integer, name text, date text, ride_time text, distance
-                integer, elevation integer)
+                integer, elevation integer, ride_type text, trainer integer)
             """
         c.execute(sql)
         conn.commit()
@@ -56,11 +57,14 @@ class GTDataStore(object):
             ride_id = (strava_id,)
             sql = "SELECT date FROM rides WHERE activity=?"
             c.execute(sql, ride_id)
-            if c.fetchone() is None:
-                ride_data = (act.get_strava_id(), act.get_athlete(), act.get_name(),
-                             act.get_gmt_date(), act.get_elapsed_time(), act.get_distance(),
-                             act.get_elevation())
-                sql = 'INSERT INTO rides VALUES (?, ?, ?, ?, ?, ?, ?)'
-                c.execute(sql, ride_data)
+            if c.fetchone() is not None:
+                if self.verbose:
+                    print 'Duplicate record found: %s' % act.name
+                continue
+            ride_data = (act.get_strava_id(), act.get_athlete(), act.get_name(),
+                            act.get_gmt_date(), act.get_elapsed_time(), act.get_distance(),
+                            act.get_elevation(), act.get_ride_type(), act.get_trainer_ride())
+            sql = 'INSERT INTO rides VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+            c.execute(sql, ride_data)
         self.commit_and_close()
 

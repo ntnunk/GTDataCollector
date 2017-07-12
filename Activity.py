@@ -1,5 +1,6 @@
 class Activity(object):
-    def __init__(self, strava_id, athlete=None, name=None, distance=None, elevation=None, gmt_date=None, elapsed_time=None):
+    def __init__(self, strava_id, athlete=None, name=None, distance=None, 
+                 elevation=None, gmt_date=None, elapsed_time=None, ride_type=None, trainer=None):
         self.strava_id = strava_id
         self.athlete = athlete
         self.name = name
@@ -7,6 +8,8 @@ class Activity(object):
         self.elevation = elevation
         self.gmt_date = gmt_date
         self.elapsed_time = elapsed_time
+        self.ride_type = ride_type
+        self.trainer = trainer
 
     def set_strava_id(self, strava_id):
         """ The Strava ride ID """
@@ -81,4 +84,16 @@ class Activity(object):
             return str(self.elapsed_time) # String for sqlite
         else:
             return self.elapsed_time # As DateTime.TimeDelta object
+
+    def set_ride_type(self, ride_type):
+        self.ride_type = ride_type
+
+    def get_ride_type(self):
+        return self.ride_type
+
+    def set_trainer_ride(self, trainer):
+        self.trainer = trainer
+
+    def get_trainer_ride(self):
+        return self.trainer
 
