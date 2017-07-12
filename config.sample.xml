@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!-- 
+     This is a sample configuration XML file. The final files should
+     be committed to GitHub or other source control since it will
+     contain sensitive information (API keys, user contact info.).
+-->
+<gtdata>
+    <strava>
+        <!-- Client ID and Client secret are optional -->
+        <client id="your-client-id" 
+            secret="your-client-secret"
+            access-token="your-access-token">
+        </client>
+        <!-- Group name will be optional. -->
+        <group name="Strava Group Name" id="strava-group-id"/>
+    </strava>
+    <!-- Database section. Path should be just path, not filename. -->
+    <database>
+        <path name="/database/path"/>
+        <file name="database.db"/>
+    </database>
+    <!-- Contact List section. Can have as many users as needed. -->
+    <contact-list>
+        <user firstname="First"
+            lastname="User"
+            email="first@user.com">
+        </user>
+        <user firstname="Second"
+            lastname="User"
+            email="second@user.com">
+        </user>
+    </contact-list>
+</gtdata>
