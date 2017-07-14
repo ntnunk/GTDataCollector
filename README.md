@@ -49,9 +49,7 @@ follows:
     </group>
 
     <!-- The local database the ride data is saved into -->
-    <database>
-        <path name="/database/path"></path>
-        <file name="database_file.db"></file>
+    <database path="/database/path" file="database_file.db">
     </database>
 
     <!-- The contact list data export files are sent to -->
