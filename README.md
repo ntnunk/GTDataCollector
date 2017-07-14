@@ -9,7 +9,9 @@ Strava, collates and arranges the data into desired import formats for other too
 challenges.
 
 ### Configuration
-Configuration is controlled via an XML file. The format of the file is as follows:
+Configuration is controlled via XML files. First is a "common" configuration file that contains
+Strava API information. This file should be set up per-user (user being a challenge
+administrator that's collecting data for a given challenge.) and contains the following format:
 
 ```xml
 <gtdata>
@@ -19,14 +21,40 @@ Configuration is controlled via an XML file. The format of the file is as follow
             secret="your-client-secret"
             access-token="your-access-token">
         </client>
-        <group id="strava-group-id"
-            name="strava-group-name">
-        </group>
     </strava>
+
+    <!--
+    The local folder the challenge configuration files are located in.
+    The script will collect and process data for all challenge config
+    files found in this folder.
+    -->
+    <challenge config-folder="."/>
+</gtdata>
+```
+Next is one or more configuration files that contain the information for a given challenge. A
+single user (challenge administrator) could have multiple configuration files in the event that
+there are multiple challenges running simultaneuously. The challenge configuration file is as
+follows:
+```xml
+<challenge>
+    <!-- 
+    Common parameters, including challenge name and whether or not to allow virtual
+    rides (Zwift, et al) and/or indoor trainer rides. These values both default to true
+    -->
+    <common name="Challenge Name" allow-virtual="true|false" allow-trainer="true|false">
+
+    <!-- The Strava group the ride data is collected from -->
+    <group id="strava-group-id"
+        name="strava-group-name">
+    </group>
+
+    <!-- The local database the ride data is saved into -->
     <database>
         <path name="/database/path"></path>
         <file name="database_file.db"></file>
     </database>
+
+    <!-- The contact list data export files are sent to -->
     <contact-list>
         <!-- As many users as desired can be configured -->
         <user firstname="First"
@@ -38,7 +66,7 @@ Configuration is controlled via an XML file. The format of the file is as follow
             email="secondguy@address.com">
         </user>
     </contact-list>
-</gtdata>
+</challenge>
 ```
 ### Status
 This script is very early pre-alpha. Some work to be done to finish core functionality, more work to
