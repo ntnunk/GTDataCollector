@@ -32,10 +32,14 @@ administrator that's collecting data for a given challenge.) and contains the fo
     <challenge config-folder="."/>
 </gtdata>
 ```
-Next is one or more configuration files that contain the information for a given challenge. A
-single user (challenge administrator) could have multiple configuration files in the event that
-there are multiple challenges running simultaneuously. The challenge configuration file is as
-follows:
+Upon execution, the script will read and parse any XML files found in the challenge config folder
+defined in the common confuration file. Any valid challange configuration files that are found in
+the folder will be processed.
+
+Challenge configuration files contain the information for a given challenge. A single user
+(challenge administrator) could have multiple configuration files in the event that there are
+multiple challenges running simultaneuously. The challenge configuration file is as follows:
+
 ```xml
 <challenge>
     <!-- 
