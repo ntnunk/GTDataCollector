@@ -10,7 +10,8 @@ challenges.
 
 ### Configuration
 Configuration is controlled via XML files. First is a "common" configuration file that contains
-Strava API information. This file should be set up per-user (user being a challenge
+Strava API information. This file should be be named "config.xml" and should be located in the
+same folder as the executable script. It should be set up per-user (user being a challenge
 administrator that's collecting data for a given challenge.) and contains the following format:
 
 ```xml
