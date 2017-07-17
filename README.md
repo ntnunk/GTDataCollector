@@ -57,6 +57,13 @@ multiple challenges running simultaneuously. The challenge configuration file is
     <database path="/database/path" file="database_file.db">
     </database>
 
+    <!-- The export file definition -->
+    <export path="./challenges"
+        file="file-prefix"
+        type="csv"
+        append-date="true">
+    </export>
+
     <!-- The contact list data export files are sent to -->
     <contact-list>
         <!-- As many users as desired can be configured -->
