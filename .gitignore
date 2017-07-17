@@ -1,3 +1,6 @@
 .git/*
 config.xml
 *.pyc
+*.db
+challenges/*
+
