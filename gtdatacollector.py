@@ -3,10 +3,12 @@ from stravalib import unithelper
 
 from Activity import Activity
 from GTDataStore import GTDataStore
+from Challenge import Challenge
 
 import xml.etree.ElementTree as et
 
 import os
+import glob
 import string
 
 class GTDataCollector(object):
@@ -14,8 +16,12 @@ class GTDataCollector(object):
         self.verbose = verbose
 
         self.strava_config = {}
-        self.contact_list = []
+        self.config_list = []
+        self.challenge_list = []
         self.read_config()
+        for challenge in self.challenge_list:
+            self.collect_ride_data(challenge)
+            self.generate_export_file(challenge)
 
     def read_config(self):
         """
@@ -29,8 +35,8 @@ class GTDataCollector(object):
         config_file = os.path.join(config_path, 'config.xml')
         config_tree = et.parse(config_file)
 
-        strava_element = config_tree.find('strava')
-        for el in strava_element:
+        element = config_tree.find('strava')
+        for el in element:
             if el.tag == 'client':
                 if 'id' in el.attrib:
                     self.strava_config['id'] = el.attrib['id']
@@ -42,43 +48,63 @@ class GTDataCollector(object):
                 else:
                     self.strava_config['secret'] = None
                 self.strava_config['access-token'] = el.attrib['access-token']
-            elif el.tag == 'group':
-                if 'name' in el.attrib:
-                    self.strava_config['group-name'] = el.attrib['name']
-                else:
-                    self.strava_config['group-name'] = None
-                self.strava_config['group-id'] = el.attrib['id']
+        element = config_tree.find('challenge')
+        self.challenge_dir = element.attrib['config-folder']
+        if not os.path.exists(self.challenge_dir):
+            print "Challenge directory doesn't exist"
+            return False
+        for cconfig in glob.glob(os.path.join(self.challenge_dir, "*.xml")):
+            print cconfig
+            self.config_list.append(cconfig)
 
-        db_element = config_tree.find('database')
-        db_name = None
-        db_path = None
-        for el in db_element:
-            if el.tag == 'path':
-                db_path = el.attrib['name']
-            elif el.tag == 'file':
-                db_name = el.attrib['name']
+        self.read_challenge_configs(self.config_list)
 
-        if db_name is not None and db_path is not None:
-            self.db_path = os.path.join(db_path, db_name)
-        else:
-            self.db_path = os.path.join('.', 'gtdc.db')
+    def read_challenge_configs(self, config_list):
+        """
+        Read and parse the challenge configuration file(s)
+        """
+        for config in config_list:
+            tree = et.parse(config)
+            root = tree.getroot()
+            if not root.tag == 'challenge':
+                print 'Invalid config found'
+                continue
+            c = Challenge()
+            for el in root:
+                if el.tag == 'common':
+                    c.set_name(el.attrib['name'])
+                    if el.attrib['allow-virtual'] == 'true':
+                        c.set_allow_virtual(True)
+                    else:
+                        c.set_allow_virtual(False)
 
-        contact_list_element = config_tree.find('contact-list')
-        for el in contact_list_element:
-            user = {}
-            if el.tag == 'user':
-                user['firstname'] = el.attrib['firstname']
-                user['lastname'] = el.attrib['lastname']
-                user['email'] = el.attrib['email']
-            self.contact_list.append(user)
+                    if el.attrib['allow-trainer'] == 'true':
+                        c.set_allow_trainer(True)
+                    else:
+                        c.set_allow_trainer(False)
+                elif el.tag == 'group':
+                    c.set_group_id(el.attrib['id'])
+                    c.set_group_name(el.attrib['name'])
+                elif el.tag == 'database':
+                    c.set_db_path(os.path.join(el.attrib['path'], el.attrib['file']))
+                elif el.tag == 'export':
+                    c.set_export_info(el.attrib['path'], el.attrib['file'], el.attrib['type'],
+                                      el.attrib['append-date'])
+                elif el.tag == 'contact-list':
+                    for user in el.findall('user'):
+                        c.add_contact(user.attrib['firstname'], user.attrib['lastname'],
+                                      user.attrib['email'])
+            self.challenge_list.append(c)
+        print self.challenge_list
 
-    def collect_ride_data(self):
+    def collect_ride_data(self, challenge):
         """
         Pull the latest ride data from Strava via the API
         """
         client = Client()
         client.access_token = self.strava_config['access-token']
-        activities = client.get_club_activities(165009)
+        #activities = client.get_club_activities(165009)
+        activities = client.get_club_activities(challenge.get_group_id())
 
         act_list = []
         for activity in activities:
@@ -95,14 +121,15 @@ class GTDataCollector(object):
             act.set_ride_type(activity.type)
             act.set_trainer_ride(activity.trainer)
             act_list.append(act)
-        db_store = GTDataStore(self.db_path, self.verbose)
+        db_store = GTDataStore(challenge.get_db_path(), self.verbose)
         db_store.store_if_new(act_list)
 
-    def generate_export_file(self, export_path):
+    def generate_export_file(self, challenge):
         """
         Generate the CSV for export
         """
-        pass
+        db_store = GTDataStore(challenge.get_db_path(), self.verbose)
+        db_store.get_challenge_records('2017-07-01', '2017-07-23')
 
     def send_export_file(self, export_file):
         """
@@ -112,4 +139,3 @@ class GTDataCollector(object):
 
 if __name__ == '__main__':
     gtdc = GTDataCollector(verbose=True)
-    gtdc.collect_ride_data()

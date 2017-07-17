@@ -28,7 +28,7 @@ class GTDataStore(object):
         # Create the ride data table
         sql = """
             CREATE TABLE rides 
-                (activity real primary key, rider integer, name text, date text, ride_time text, distance
+                (activity int primary key, rider integer, name text, date text, ride_time text, distance
                 integer, elevation integer, ride_type text, trainer integer)
             """
         c.execute(sql)
@@ -58,9 +58,9 @@ class GTDataStore(object):
             sql = "SELECT date FROM rides WHERE activity=?"
             c.execute(sql, ride_id)
             if c.fetchone() is not None:
-                if self.verbose:
-                    print 'Duplicate record found: %s' % act.name
                 continue
+            if self.verbose:
+                print 'New ride found: %s' % act.get_name()
             ride_data = (act.get_strava_id(), act.get_athlete(), act.get_name(),
                             act.get_gmt_date(), act.get_elapsed_time(), act.get_distance(),
                             act.get_elevation(), act.get_ride_type(), act.get_trainer_ride())
@@ -68,3 +68,12 @@ class GTDataStore(object):
             c.execute(sql, ride_data)
         self.commit_and_close()
 
+    def get_challenge_records(self, start_date, end_date):
+        sql = "SELECT rider, date, distance, ride_time, elevation FROM rides "
+        sql += "WHERE (date BETWEEN ? AND ?) AND ride_type='Ride' AND trainer=0 "
+        sql += "ORDER BY date;"
+        print sql
+        self.create_connection()
+        c = self.get_db_cursor()
+        for row in c.execute(sql, (start_date, end_date)):
+            print row
