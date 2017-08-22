@@ -12,7 +12,7 @@ challenges.
 Configuration is controlled via XML files. First is a "common" configuration file that contains
 Strava API information. This file should be be named "config.xml" and should be located in the
 same folder as the executable script. It should be set up per-user (user being a challenge
-administrator that's collecting data for a given challenge.) and contains the following format:
+administrator that's collecting data for a given challenge) and follows this format:
 
 ```xml
 <gtdata>
@@ -33,12 +33,12 @@ administrator that's collecting data for a given challenge.) and contains the fo
 </gtdata>
 ```
 Upon execution, the script will read and parse any XML files found in the challenge config folder
-defined in the common confuration file. Any valid challange configuration files that are found in
+defined in the common confuration file. Any valid challenge configuration files that are found in
 the folder will be processed.
 
 Challenge configuration files contain the information for a given challenge. A single user
 (challenge administrator) could have multiple configuration files in the event that there are
-multiple challenges running simultaneuously. The challenge configuration file is as follows:
+multiple challenges running simultaneuously. Each challenge configuration file is as follows:
 
 ```xml
 <challenge>
@@ -47,10 +47,10 @@ multiple challenges running simultaneuously. The challenge configuration file is
     rides (Zwift, et al) and/or indoor trainer rides. These values both default to true
     -->
     <common name="Challenge Name" allow-virtual="true|false" allow-trainer="true|false">
+    </common>
 
     <!-- The Strava group the ride data is collected from -->
-    <group id="strava-group-id"
-        name="strava-group-name">
+    <group id="strava-group-id" name="strava-group-name">
     </group>
 
     <!-- The local database the ride data is saved into -->
