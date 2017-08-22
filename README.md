@@ -5,7 +5,7 @@ A simple tool to assist with data collection for the Grant Tour Challenges hoste
 MyFitnessPal community. 
 
 This tool's purpose is to automate the collection of bicycle ride data from specifc groups on
-Strava, collates and arranges the data into desired import formats for other tools used in the
+Strava then collate and arrange the data into desired import formats for other tools used in the
 challenges.
 
 ### Configuration
