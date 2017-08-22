@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!-- 
      This is a sample configuration XML file. The final files should
-     be committed to GitHub or other source control since it will
+     not be committed to GitHub or other source control since it will
      contain sensitive information (API keys, user contact info.).
 -->
 <gtdata>
