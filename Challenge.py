@@ -71,7 +71,10 @@ class Challenge(object):
         self.contact_list.append(contact)
 
     def set_export_info(self, path, prefix, export_type, append_date):
-        self.export_path = path # Need to verify path
+        if os.path.exists(path):
+            self.export_path = path
+        else:
+            self.export_path = '.'
         self.export_prefix = prefix
         self.export_type = export_type
         self.export_append_date = append_date
