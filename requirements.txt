@@ -5,7 +5,7 @@ idna==2.5
 pkg-resources==0.0.0
 python-dateutil==2.6.0
 pytz==2017.2
-requests==2.18.1
+requests==2.20.0
 six==1.10.0
 stravalib==0.6.6
 units==0.7
